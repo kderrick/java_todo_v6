@@ -19,30 +19,30 @@ public class AppTest extends FluentTest {
   @Rule
   public DatabaseRule database = new DatabaseRule();
 
-  @Test
-  public void categoryIsCreatedTest() {
-    goTo("http://localhost:4567/");
-    fill("#name").with("Household chores");
-    submit(".btn");
-    assertThat(pageSource()).contains("Household chores");
-  }
-
-  @Test
-  public void categoryIsDisplayedTest() {
-    Category myCategory = new Category("Household chores");
-    myCategory.save();
-    goTo("http://localhost:4567/");
-    assertThat(pageSource()).contains("Household chores");
-  }
-
-  @Test
-  public void taskIsCreated() {
-    Category myCategory = new Category("Household chores");
-    myCategory.save();
-    String categoryPath = String.format("http://localhost:4567/categories/%d", myCategory.getId());
-    Task newTask = new Task("Laundry", myCategory.getId());
-    newTask.save();
-    goTo(categoryPath);
-    assertThat(pageSource()).contains("Laundry");
-  }
+  // @Test
+  // public void categoryIsCreatedTest() {
+  //   goTo("http://localhost:4567/");
+  //   fill("#name").with("Household chores");
+  //   submit(".btn");
+  //   assertThat(pageSource()).contains("Household chores");
+  // }
+  //
+  // @Test
+  // public void categoryIsDisplayedTest() {
+  //   Category myCategory = new Category("Household chores");
+  //   myCategory.save();
+  //   goTo("http://localhost:4567/");
+  //   assertThat(pageSource()).contains("Household chores");
+  // }
+  //
+  // @Test
+  // public void taskIsCreated() {
+  //   Category myCategory = new Category("Household chores");
+  //   myCategory.save();
+  //   String categoryPath = String.format("http://localhost:4567/categories/%d", myCategory.getId());
+  //   Task newTask = new Task("Laundry", myCategory.getId());
+  //   newTask.save();
+  //   goTo(categoryPath);
+  //   assertThat(pageSource()).contains("Laundry");
+  // }
 }

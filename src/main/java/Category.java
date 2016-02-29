@@ -1,5 +1,6 @@
 import java.util.List;
 import org.sql2o.*;
+import java.util.ArrayList;
 
 public class Category {
   private int id;
@@ -54,12 +55,33 @@ public class Category {
     }
   }
 
-  public List<Task> getTasks() {
+  public void addTask(Task task) {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT * FROM tasks where categoryId=:id";
-      return con.createQuery(sql)
-        .addParameter("id", this.id)
-        .executeAndFetch(Task.class);
+      String sql = "INSERT INTO categories_tasks (category_id, task_id) VALUES (:category_id, :task_id)";
+      con.createQuery(sql)
+        .addParameter("category_id", this.getId())
+        .addParameter("task_id", task.getId())
+        .executeUpdate();
+    }
+  }
+
+  public ArrayList<Task> getTasks() {
+    try(Connection con = DB.sql2o.open()){
+      String sql = "SELECT task_id FROM categories_tasks WHERE category_id = :category_id";
+      List<Integer> taskIds = con.createQuery(sql)
+        .addParameter("category_id", this.getId())
+        .executeAndFetch(Integer.class);
+
+      ArrayList<Task> tasks = new ArrayList<Task>();
+
+      for (Integer taskId : taskIds) {
+          String taskQuery = "Select * From tasks WHERE id = :taskId";
+          Task task = con.createQuery(taskQuery)
+            .addParameter("taskId", taskId)
+            .executeAndFetchFirst(Task.class);
+          tasks.add(task);
+      }
+      return tasks;
     }
   }
 }

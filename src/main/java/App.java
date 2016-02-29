@@ -1,9 +1,10 @@
 import java.util.HashMap;
 import java.util.List;
+
 import spark.ModelAndView;
-import java.util.ArrayList;
 import spark.template.velocity.VelocityTemplateEngine;
 import static spark.Spark.*;
+
 
 public class App {
   public static void main(String[] args) {
@@ -12,45 +13,50 @@ public class App {
 
     get("/", (request, response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
-      model.put("categoryList", Category.all());
-      model.put("template", "templates/index.vtl");
+      model.put("template", "templates/tasks.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
-    post("/categories", (request, response) -> {
+    get("/tasks", (request,response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
-
-      String userCategory = request.queryParams("name");
-      Category newCategory = new Category(userCategory);
-      newCategory.save();
-      model.put("categoryList", Category.all());
-      model.put("template", "templates/index.vtl");
+      List<Task> tasks = Task.all();
+      model.put("tasks", tasks);
+      model.put("template", "templates/tasks.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
-    get("/categories/:id", (request, response) -> {
+    get("/tasks/:id", (request,response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
-      Category category = Category.find(Integer.parseInt(request.params(":id")));
-      model.put("taskList", category.getTasks());
-      model.put("category", category);
-      model.put("template", "templates/task-form.vtl");
+      int id = Integer.parseInt(request.params("id"));
+      Task task = Task.find(id);
+      model.put("task", task);
+      model.put("template", "templates/task.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
-    post("/categories/:id", (request, response) -> {
+    post("/tasks", (request, response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
-      Category category = Category.find(Integer.parseInt(request.params(":id")));
+      String description = request.queryParams("description");
+      Task newTask = new Task(description);
+      response.redirect("/tasks");
+      return null;
+    });
 
-      String userTask = request.queryParams("description");
-      Task newTask = new Task(userTask, category.getId());
-
-      newTask.save();
-
-      List<Task> taskList = category.getTasks();
-      model.put("category", category);
-      model.put("taskList", taskList);
-      model.put("template", "templates/task-form.vtl");
+    put("/tasks/:id", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+      Task task = Task.find(Integer.parseInt(request.params("id")));
+      String description = request.queryParams("description");
+      task.update("description");
+      model.put("template", "templates/task.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
- }
+
+    delete("/tasks/:id", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+      Task task = Task.find(Integer.parseInt(request.params("id")));
+      task.delete();
+      model.put("template", "templates/task.vtl");
+      return new ModelAndView(model, layout);
+    }, new VelocityTemplateEngine());
+  }
 }
