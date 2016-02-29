@@ -1,5 +1,6 @@
 import java.util.List;
 import org.sql2o.*;
+import java.util.ArrayList;
 
 public class Task {
   private int id;
@@ -74,5 +75,35 @@ public static List<Task> all() {
         .executeUpdate();
     }
   }
+
+  public void addCategory(Category category) {
+    try(Connection con = DB.sql2o.open()) {
+      String sql = "INSERT INTO categories_tasks (category_id, task_id) VALUES (:category_id, :task_id)";
+      con.createQuery(sql)
+        .addParameter("category_id", category.getId())
+        .addParameter("task_id", this.getId())
+        .executeUpdate();
+    }
+  }
+
+  public ArrayList<Category> getCategories() {
+    try(Connection con = DB.sql2o.open()){
+      String sql = "SELECT category_id FROM categories_tasks WHERE task_id = :task_id";
+      List<Integer> categoryIds = con.createQuery(sql)
+        .addParameter("task_id", this.getId())
+        .executeAndFetch(Integer.class);
+
+      ArrayList<Category> categories = new ArrayList<Category>();
+
+      for (Integer categoryId : categoryIds) {
+          String taskQuery = "Select * From categories WHERE id = :categoryId";
+          Category category = con.createQuery(taskQuery)
+            .addParameter("categoryId", categoryId)
+            .executeAndFetchFirst(Category.class);
+          categories.add(category);
+      }
+      return categories;
+    }
+}
 
 }
