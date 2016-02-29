@@ -58,28 +58,37 @@ public class TaskTest {
   }
 
   @Test
-    public void getCategories_returnsAllCategories_ArrayList() {
-      Category myCategory = new Category("Household chores");
-      myCategory.save();
+  public void getCategories_returnsAllCategories_ArrayList() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
 
-      Task myTask = new Task("Mow the lawn");
-      myTask.save();
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
 
-      myTask.addCategory(myCategory);
-      List savedCategories = myTask.getCategories();
-      assertEquals(savedCategories.size(), 1);
-    }
+    myTask.addCategory(myCategory);
+    List savedCategories = myTask.getCategories();
+    assertEquals(savedCategories.size(), 1);
+  }
 
   @Test
-    public void delete_deletesAllTasksAndListsAssoicationes() {
-      Category myCategory = new Category("Household chores");
-      myCategory.save();
+  public void delete_deletesAllTasksAndListsAssoicationes() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
 
-      Task myTask = new Task("Mow the lawn");
-      myTask.save();
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
 
-      myTask.addCategory(myCategory);
-      myTask.delete();
-      assertEquals(myCategory.getTasks().size(), 0);
-    }
+    myTask.addCategory(myCategory);
+    myTask.delete();
+    assertEquals(myCategory.getTasks().size(), 0);
+  }
+
+  @Test
+  public void complete_movesTasksToCompletedList() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    // myTask.addCategory(myCategory);
+    myTask.complete();
+    assertTrue(myTask.getStatus());
+  }
 }

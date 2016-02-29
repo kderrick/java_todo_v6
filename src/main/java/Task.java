@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Task {
   private int id;
   private String description;
+  private boolean status;
 
   public String getDescription() {
     return description;
@@ -14,9 +15,14 @@ public class Task {
     return id;
   }
 
+  public boolean getStatus() {
+    return status;
+  }
+
 
   public Task(String description) {
     this.description = description;
+    status = false;
   }
 
 public static List<Task> all() {
@@ -33,15 +39,17 @@ public static List<Task> all() {
    } else {
      Task newTask = (Task) otherTask;
      return this.getDescription().equals(newTask.getDescription()) &&
-      this.getId() == newTask.getId();
+      this.getId() == newTask.getId() &&
+      this.getStatus() == newTask.getStatus();
    }
  }
 
  public void save() {
    try(Connection con = DB.sql2o.open()) {
-     String sql = "INSERT INTO Tasks (description) VALUES (:description)";
+     String sql = "INSERT INTO Tasks (description, status) VALUES (:description, :status)";
      this.id = (int) con.createQuery(sql, true)
       .addParameter("description", this.description)
+      .addParameter("status", this.status)
       .executeUpdate()
       .getKey();
    }
@@ -79,7 +87,7 @@ public static List<Task> all() {
       ArrayList<Category> categories = new ArrayList<Category>();
 
       for (Integer categoryId : categoryIds) {
-          String taskQuery = "Select * From categories WHERE id = :categoryId";
+          String taskQuery = "Select * FROM categories WHERE id = :categoryId";
           Category category = con.createQuery(taskQuery)
             .addParameter("categoryId", categoryId)
             .executeAndFetchFirst(Category.class);
@@ -110,6 +118,17 @@ public static List<Task> all() {
       .addParameter("description", description)
       .addParameter("id", id)
       .executeUpdate();
+    }
+  }
+
+  public void complete() {
+    this.status = true;
+    try(Connection con = DB.sql2o.open()) {
+      String sql = "UPDATE tasks SET status = :status WHERE id = :id";
+      con.createQuery(sql)
+        .addParameter("status", this.status)
+        .addParameter("id", id)
+        .executeUpdate();
     }
   }
 
