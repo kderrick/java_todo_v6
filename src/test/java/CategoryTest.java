@@ -61,4 +61,17 @@ public class CategoryTest {
     List savedTasks = myCategory.getTasks();
     assertEquals(savedTasks.size(), 1);
   }
+
+  @Test
+    public void delete_deletesAllTasksAndListsAssoicationes() {
+      Category myCategory = new Category("Household chores");
+      myCategory.save();
+
+      Task myTask = new Task("Mow the lawn");
+      myTask.save();
+
+      myCategory.addTask(myTask);
+      myCategory.delete();
+      assertEquals(myTask.getCategories().size(), 0);
+    }
 }
