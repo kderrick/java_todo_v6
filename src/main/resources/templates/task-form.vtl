@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-md-6 leftCol">
+    <h3>Add Task to $category.getName()</h3>
+    <form action="/categories/$category.getId()" method="post">
+      <input id='categoryId' name='categoryId' type='hidden' value='$category.getId()'>
+      <div class="form-group">
+        <label for="description"></label>
+        <input class="form-control" id="description" name="description" type="text" placeholder="enter a task" required>
+      </div>
+      <button type="submit" class="btn btn-default" id="defButton">Add Task</button>
+    </form>
+  </div>
+
+  <div class="col-md-6 rightCol">
+    <h3>$category.getName()</h3>
+    <hr>
+    <p>Task(s):</p>
+    <ul>
+    #foreach ($task in $taskList)
+      <li>$task.getDescription()</li>
+    #end
+    </ul>
+  </div>
+</div>
+<hr>
+<a href="/" type="button" class="btn btn-default" id="homeButton">To Do List Home</a>
