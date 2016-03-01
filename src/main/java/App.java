@@ -89,5 +89,13 @@ public class App {
       response.redirect("/tasks/" + taskId);
       return null;
     });
+
+    post("complete/tasks", (request, response) -> {
+      int taskId = Integer.parseInt(request.queryParams("task_id"));
+      Task task = Task.find(taskId);
+      task.complete();
+      response.redirect("/tasks");
+      return null;
+    });
   }
 }

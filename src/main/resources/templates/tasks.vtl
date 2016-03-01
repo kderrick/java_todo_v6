@@ -1,3 +1,4 @@
+tasks.vtl
 <h1>Task list!</h1>
 
 <p>Add a new task:</p>
@@ -6,11 +7,24 @@
   <label for="description">Task Description</label>
   <input id="description" name="description" type="text">
 
-  <button type="submit">Add task</button>
+  <button id ="addTask" type="submit">Add task</button>
 </form>
+<ul>
+
 
 #foreach ($task in $tasks)
+  #if($task.getStatus())
+  <li><a href="/tasks/$task.getId()">Complete: $task.getDescription()</a></li>
+
+  #else
   <li><a href="/tasks/$task.getId()">$task.getDescription()</a></li>
+  <form action="complete/tasks" method="post">
+    <input id="task_id" name="task_id" type="hidden" value="$task.getId()">
+    <button type="submit" id="$task.getId()" name="completeTask" class="btn btn-secondary">
+      Mark Complete</button></h4>
+    </form>
+  #end
 #end
+</ul>
 
 <p><a href='/'>Home</a></p>
